@@ -103,55 +103,61 @@ namespace PLM.Controllers
                 pictureToSave.Attribution = "";
             else
                 pictureToSave.Attribution = picture.Attribution;
-
+            ConvertImageToDataString(pictureToSave, Request.Files[0].InputStream);
+            
             ViewBag.AnswerID = id;
-
             if (ModelState.IsValid)
             {
-                var location = SaveUploadedFile(pictureToSave, (int)id);
+                //    var location = SaveUploadedFile(pictureToSave, (int)id);
+                //    if (location == "FAILED" || location == null)
+                //    {
+                //        if (incorrectImageType)
+                //        {
+                //            return RedirectToAction("InvalidImage", new { controller = "Pictures", id = pictureToSave.AnswerID });
+                //        }
+                //        else if (imageSizeTooLarge)
+                //        {
+                //            return RedirectToAction("FileToLarge", new { controller = "Pictures", id = pictureToSave.AnswerID });
+                //        }
+                //        return RedirectToAction("UploadError", new { controller = "Pictures", id = pictureToSave.AnswerID });
+                //    }
+                //    else
+                //    {
+                //        //Stream stream = Request.Files[0].InputStream;
+                //        //int imgLenth = Convert.ToInt32(stream.Length);
+                //        //byte[] imgArr = new byte[imgLenth];
+                //        //using (StreamReader sr = new StreamReader(stream))
+                //        //{
+                //        //    for (int streamIndex = 0; streamIndex < imgLenth; streamIndex++)
+                //        //    {
+                //        //        imgArr[streamIndex] = (byte)sr.Read();
+                //        //    }
+                //        //}
+                //        Image image = Image.FromStream(Request.Files[0].InputStream);
+                //        ImageConverter IC = new ImageConverter();
+                //        byte[] imgArr = (byte[])IC.ConvertTo(image, typeof(byte[]));
+                //        pictureToSave.PictureData = System.Convert.ToBase64String(imgArr);
+                //    }
+                //pictureToSave.Location = location;
 
-                if (location == "FAILED" || location == null)
-                {
-                    if (incorrectImageType)
-                    {
-                        return RedirectToAction("InvalidImage", new { controller = "Pictures", id = pictureToSave.AnswerID });
-                    }
-                    else if (imageSizeTooLarge)
-                    {
-                        return RedirectToAction("FileToLarge", new { controller = "Pictures", id = pictureToSave.AnswerID });
-                    }
-                    return RedirectToAction("UploadError", new { controller = "Pictures", id = pictureToSave.AnswerID });
-                }
-                else
-                {
-                    //Stream stream = Request.Files[0].InputStream;
-                    //int imgLenth = Convert.ToInt32(stream.Length);
-                    //byte[] imgArr = new byte[imgLenth];
-                    //using (StreamReader sr = new StreamReader(stream))
-                    //{
-                    //    for (int streamIndex = 0; streamIndex < imgLenth; streamIndex++)
-                    //    {
-                    //        imgArr[streamIndex] = (byte)sr.Read();
-                    //    }
-                    //}
-
-                    Image image = Image.FromStream(Request.Files[0].InputStream);
-                    ImageConverter IC = new ImageConverter();
-                    byte[] imgArr = (byte[])IC.ConvertTo(image, typeof(byte[]));
-
-
-                    pictureToSave.PictureData = System.Convert.ToBase64String(imgArr);
-
-                    pictureToSave.Location = location;
-                    db.Pictures.Add(pictureToSave);
-                    db.SaveChanges();
-                }
+                db.Pictures.Add(pictureToSave);
+                db.SaveChanges();
                 return RedirectToAction("edit", new { controller = "Answers", id = pictureToSave.AnswerID });
             }
 
             ViewBag.AnswerID = new SelectList(db.Answers, "AnswerID", "AnswerString", pictureToSave.AnswerID);
             return View(pictureToSave);
         }
+
+        [NonAction]
+        public static void ConvertImageToDataString(Picture pictureToSave, Stream stream)
+        {
+            ImageConverter IC = new ImageConverter();
+            Image image = Image.FromStream(stream);
+            byte[] imageArray = (byte[])IC.ConvertTo(image, typeof(byte[]));
+            pictureToSave.PictureData = System.Convert.ToBase64String(imageArray);
+        }
+
         /// <summary>
         /// Save a picture to the server. Returns the relative path if successful, otherwise returns "FAILED"
         /// </summary>
