@@ -53,6 +53,12 @@ namespace PLM.Controllers
             return View(pic);
         }
 
+        public ActionResult PictureViewImageEditor(int? id)
+        {
+            Picture picture = db.Pictures.Find(id);
+            return View(picture);
+        }
+
         //Convert all pictures saved in file
         //system to image data in database
         //public void ConvertAllPicturesToStringData()
@@ -433,14 +439,21 @@ namespace PLM.Controllers
         public ActionResult Save()
         {
             string origUrl = Request.Form.Get("origUrl");
-            origUrl = HttpUtility.HtmlDecode(origUrl);
+            //origUrl = HttpUtility.HtmlDecode(origUrl);
             string tempUrl = Request.Form.Get("tempUrl");
-            tempUrl = HttpUtility.HtmlDecode(tempUrl);
-            string temporaryFileName = Path.GetFileName(tempUrl);
+            //tempUrl = HttpUtility.HtmlDecode(tempUrl);
+            //string temporaryFileName = Path.GetFileName(tempUrl);
             string ansId = Request.Form.Get("answerID");
-            string result = PermaSave(temporaryFileName, origUrl);
+            //string result = PermaSave(temporaryFileName, origUrl);
+            string imgID = Request.Form.Get("imageID");
+            int imageID = Int32.Parse(imgID);
 
-            return RedirectToAction("Edit", "Answers", new { id = ansId, rslt = result });
+            Picture picture = db.Pictures.Find(imageID);
+            picture.PictureData = tempUrl;
+            db.Entry(picture).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("Edit", "Answers", new { id = ansId });
         }
 
         [HttpPost]
@@ -564,70 +577,70 @@ namespace PLM.Controllers
         /// <param name="toNewFilePath">The new name for the saved file, with the new path. 
         /// Expects the full path</param>
         /// <returns>string</returns>
-        [NonAction]
-        private string PermaSave(string filename, string toNewFilePath)
-        {
+        //[NonAction]
+        //private string PermaSave(string filename, string toNewFilePath)
+        //{
 
-            List<string> filesToMove = new List<string>();
+        //    List<string> filesToMove = new List<string>();
 
-            string dirPath = (Path.Combine(Server.MapPath("~/Content/Images/tempUploads/")));
-            //string dirPath = DevPro.baseFileDirectory + "tempUploads";
-            string newDirPath = Path.GetDirectoryName(Server.MapPath(toNewFilePath)) + @"\";
-            //string newDirPath = (Path.Combine(Server.MapPath("~/Content/Images/permUploads/")));
-            string newFileName = Path.GetFileNameWithoutExtension(toNewFilePath);
-            string result;
+        //    string dirPath = (Path.Combine(Server.MapPath("~/Content/Images/tempUploads/")));
+        //    //string dirPath = DevPro.baseFileDirectory + "tempUploads";
+        //    string newDirPath = Path.GetDirectoryName(Server.MapPath(toNewFilePath)) + @"\";
+        //    //string newDirPath = (Path.Combine(Server.MapPath("~/Content/Images/permUploads/")));
+        //    string newFileName = Path.GetFileNameWithoutExtension(toNewFilePath);
+        //    string result;
 
-            //if the selected file doesn't exist in the temp folder
-            if (!(System.IO.File.Exists(dirPath + filename)))
-            {
-                //If this code is reached, the passed in filename could not be accessed. 
-                //It may have been moved, deleted, or did not exist in the first place.
-                //The passed in filename may have also contained illegal characters, 
-                //referenced a location on a failing/missing disk, 
-                //or the program might not have read permissions for that specific file.
-                result = "BAD LOCATION:" + dirPath + filename;
-                return result;
-            }
+        //    //if the selected file doesn't exist in the temp folder
+        //    if (!(System.IO.File.Exists(dirPath + filename)))
+        //    {
+        //        //If this code is reached, the passed in filename could not be accessed. 
+        //        //It may have been moved, deleted, or did not exist in the first place.
+        //        //The passed in filename may have also contained illegal characters, 
+        //        //referenced a location on a failing/missing disk, 
+        //        //or the program might not have read permissions for that specific file.
+        //        result = "BAD LOCATION:" + dirPath + filename;
+        //        return result;
+        //    }
 
-            string[] filesToSave = Directory.GetFiles(dirPath, filename);
+        //    string[] filesToSave = Directory.GetFiles(dirPath, filename);
 
-            if (filesToSave.Length == 0)
-            {
-                //If this code is reached, GetFiles didn't find any matching files.
-                return "NO FILES FOUND";
-            }
-            //for each file to be saved, 
-            foreach (string filePath in filesToSave)
-            {
-                string newFilePath;
-                if (FileManipExtensions.TryRenameFile(filePath, newFileName, out newFilePath, true))
-                {
-                    filesToMove.Add(newFilePath);
-                }
-            }
-            //Make sure that filepaths were actually moved to the filesToMove list.
-            if (filesToMove.Count == 0)
-            {
-                //If this code is reached, there is a problem within the TryRenameFile method.
-                //Another process may have been accessing the file at the time of the renaming.
-                return "BAD MOVE ON RENAME";
-            }
+        //    if (filesToSave.Length == 0)
+        //    {
+        //        //If this code is reached, GetFiles didn't find any matching files.
+        //        return "NO FILES FOUND";
+        //    }
+        //    //for each file to be saved, 
+        //    foreach (string filePath in filesToSave)
+        //    {
+        //        string newFilePath;
+        //        if (FileManipExtensions.TryRenameFile(filePath, newFileName, out newFilePath, true))
+        //        {
+        //            filesToMove.Add(newFilePath);
+        //        }
+        //    }
+        //    //Make sure that filepaths were actually moved to the filesToMove list.
+        //    if (filesToMove.Count == 0)
+        //    {
+        //        //If this code is reached, there is a problem within the TryRenameFile method.
+        //        //Another process may have been accessing the file at the time of the renaming.
+        //        return "BAD MOVE ON RENAME";
+        //    }
 
-            string[] filesMove = filesToMove.ToArray();
-            //Verify that all the filepaths were moved to the array intact
-            //if filesMove.Length is either zero or unequal to filesToMove.Count
-            if (filesMove.Length == 0 || filesMove.Length != filesToMove.Count)
-            {
-                //If this code is reached, something happened that nulled 
-                //or removed some or all elements from the filesMove array
-                return "BAD MOVE DURING TRANSFER";
-            }
-            if (FileManipExtensions.MoveSpecificFiles(filesMove, newDirPath, true))
-            {
-                return "SAVED";
-            }
-            else return "FAILED ON FILE MOVE";
-        }
+        //    string[] filesMove = filesToMove.ToArray();
+        //    //Verify that all the filepaths were moved to the array intact
+        //    //if filesMove.Length is either zero or unequal to filesToMove.Count
+        //    if (filesMove.Length == 0 || filesMove.Length != filesToMove.Count)
+        //    {
+        //        //If this code is reached, something happened that nulled 
+        //        //or removed some or all elements from the filesMove array
+        //        return "BAD MOVE DURING TRANSFER";
+        //    }
+        //    if (FileManipExtensions.MoveSpecificFiles(filesMove, newDirPath, true))
+        //    {
+        //        return "SAVED";
+        //    }
+        //    else return "FAILED ON FILE MOVE";
+        //}
 
         /// <summary>
         /// Discard all the images in the temp folder with the given filename.
