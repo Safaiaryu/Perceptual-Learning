@@ -47,6 +47,7 @@ namespace PLM.Controllers
             //where "[IMAGEDATA]" is a base64 string that converts to a png image.
             string imgId = Request.Form.Get("imgId");
             string answerId = Request.Form.Get("answerId");
+            // SaveImage saves a temporary file
             string result = SaveImage(Request.Form.Get("imgData"), imgId, answerId);
             
             if (result == "FAILED")

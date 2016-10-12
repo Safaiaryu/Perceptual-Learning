@@ -25,8 +25,7 @@
                     origUrlInput.value = imgEdit.dataset.origSource;
                     tempUrlInput.value = text.statusText;
 
-                    alert('Image changes have been saved successfully. \nRemember to ' +
-                    'click the save button to finalize your changes.');
+                    alert('Image changes have been saved successfully. \nRemember to click the save button to finalize your changes.');
                     myPixie.close();
                 },
                 error: function (xhr, status, text) {
