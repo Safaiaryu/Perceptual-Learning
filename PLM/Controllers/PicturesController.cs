@@ -128,8 +128,9 @@ namespace PLM.Controllers
         {
             ImageConverter IC = new ImageConverter();
             Image image = Image.FromStream(stream);
-            byte[] imageArray = (byte[])IC.ConvertTo(image, typeof(byte[]));
-            pictureToSave.PictureData = Convert.ToBase64String(imageArray);
+            image = PictureResizer.ScaleImage(image, 600, 400);
+            //byte[] imageArray = (byte[])IC.ConvertTo(image, typeof(byte[]));
+            pictureToSave.PictureData = Convert.ToBase64String(PictureResizer.GetByteArrayFromImage(image));
         }
 
         ///// <summary>
