@@ -16,12 +16,36 @@
     </div>
 </section>
 <br />
+<div>
+    @Html.ActionLink("Add Picture", "Create", new { Controller = "Pictures", id = Model.AnswerID, ModuleID = Model.ModuleID }, new { type = "button-enter" })
+</div>
+<div class="form-group">
+    @Html.LabelFor(model => model.Pictures, "Pictures", new { @class = "control-label col-md-2" })
+    <div class="form-group, scroll-box, col-md-10">
+        @foreach (Picture pic in Model.Pictures)
+        {
+            <div class="col-xs-6 col-sm-6 col-md-4 portfolio-item branded logos">
+                <div class="portfolio-wrapper defaultHeight">
+                    <div class="portfolio-single">
+                        <div class="portfolio-thumb img-hover">
+                            @Html.Action("PictureView", "Pictures", new { id = pic.PictureID })
+                            @*<img onerror="this.src = '/PerceptualLearning/Content/images/Error.bmp';" src="@pic.Location" id="@pic.PictureID" title="@pic.AnswerID" class="img-responsive moduleImage" alt="Answer Image">*@
+                        </div>
+                    </div>
+                    <div class="portfolio-info ">
+                        @Html.ActionLink("Edit Image", "ImageEditor", new { controller = "Pictures", id = pic.PictureID }) |
+                        @Html.ActionLink("Attribution", "Edit", new { controller = "Pictures", id = pic.PictureID }) |
+                        @Html.ActionLink("Delete", "Delete", new { controller = "Pictures", id = pic.PictureID })
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    <div>
-        @Html.ActionLink("Add Picture", "Create", new { Controller = "Pictures", id = Model.AnswerID, ModuleID = Model.ModuleID }, new { type = "button-enter" })
-    </div>
     <div class="form-horizontal floatLeft" style="width:100%;">
         @Html.ValidationSummary(true)
         @Html.HiddenFor(model => model.AnswerID)
@@ -45,29 +69,6 @@
                 @Html.TextBoxFor(model => model.PictureCount, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Pictures, "Pictures", new { @class = "control-label col-md-2" })
-            <div class="form-group, scroll-box, col-md-10">
-                @foreach (Picture pic in Model.Pictures)
-                {
-                    <div class="col-xs-6 col-sm-6 col-md-4 portfolio-item branded logos">
-                        <div class="portfolio-wrapper defaultHeight">
-                            <div class="portfolio-single">
-                                <div class="portfolio-thumb img-hover">
-                                    @Html.Action("PictureView", "Pictures", new { id = pic.PictureID })
-                                    @*<img onerror="this.src = '/PerceptualLearning/Content/images/Error.bmp';" src="@pic.Location" id="@pic.PictureID" title="@pic.AnswerID" class="img-responsive moduleImage" alt="Answer Image">*@
-                                </div>
-                            </div>
-                            <div class="portfolio-info ">
-                                    @Html.ActionLink("Edit Image", "ImageEditor", new { controller = "Pictures", id = pic.PictureID }) |
-                                    @Html.ActionLink("Attribution", "Edit", new { controller = "Pictures", id = pic.PictureID }) |
-                                    @Html.ActionLink("Delete", "Delete", new { controller = "Pictures", id = pic.PictureID })
-                            </div>
-                        </div>
-                    </div>
-                }                     
-            </div>
-        </div>
         <br />
         <div class="form-group">
             <div class="clearLeft floatRight col-lg-2">
@@ -76,58 +77,3 @@
         </div>
     </div>
 }
-<script data-preload="true" data-path="@Url.Content("~/pixie-image-editor/pixie")" src="@Url.Content("~/pixie-image-editor/pixie/pixie-integrate.js")"></script>
-<script>
-    //function saveAll() {
-    //    $.ajax({
-    //        type: "POST",
-    //        url: '/ImageEditor/Save',
-    //        data: { willSave: "True" },
-    //        success: function (response) {
-    //            alert('Images saved successfully!');
-    //        },
-    //        error: function (xhr, status, text) {
-    //            alert(text);
-    //        }
-    //    });
-    //}
-
-    //function discardChanges() {
-    //    $.ajax({
-    //        type: "POST",
-    //        url: '/ImageEditor/Save',
-    //        data: { willSave: "False" },
-    //        success: function (response) {
-    //            alert('Changes Discarded');
-    //        },
-    //        error: function (xhr, status, text) {
-    //            alert(text);
-    //        }
-    //    });
-    //}
-    var myPixie = Pixie.setOptions({
-        replaceOriginal: true,
-        appendTo: 'body',
-        onSave: function (data, img) {
-            $.ajax({
-                type: 'POST',
-                url: '/ImageEditor/ImageEditor',
-                data: { imgData: data },
-                success: function (response) {
-                    alert('Image changes have been saved successfully. \nRemember to ' +
-                    'click the save button to finalize your changes.');
-                },
-                error: function (xhr, status, text) {
-                    alert(text);
-                    myPixie.close();
-                }
-            });
-        }
-    });
-    $('#imgEdit').on('click', function (e) {
-        myPixie.open({
-            url: e.target.src,
-            image: e.target
-        });
-    });
-</script>

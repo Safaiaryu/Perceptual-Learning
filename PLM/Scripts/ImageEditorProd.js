@@ -4,9 +4,9 @@
     var $vars = $('#jslink').data();
 
     var imgEdit = document.getElementById($vars.imageId);
-    var imgIdInput = document.getElementById("imgId");
+    var imgIdInput = document.getElementById("imageId");
     var answerIdInput = document.getElementById("answerId");
-    var imgDataInput = document.getElementById("imgData");
+    var imgDataInput = document.getElementById("imageData");
     var origUrlInput = document.getElementById("origUrl");
     var tempUrlInput = document.getElementById("tempUrl");
 
@@ -25,11 +25,11 @@
                     origUrlInput.value = imgEdit.dataset.origSource;
                     tempUrlInput.value = text.statusText;
 
-                    alert('Image changes have been saved successfully. \nRemember to click the save button to finalize your changes.');
+                    //alert('Image changes have been saved successfully. \nRemember to click the save button to finalize your changes.');
                     myPixie.close();
                 },
                 error: function (xhr, status, text) {
-                    alert(text);
+                    //alert(text);
                     myPixie.close();
                 }
             });

@@ -12,11 +12,11 @@ namespace PLM.Models
         /// <summary>
         /// Base 64 image data
         /// </summary>
-        public string Base64ImgData { get; set; }
+        public string newBase64ImageData { get; set; }
         /// <summary>
         /// The original image's url
         /// </summary>
-        public string originalUrl { get; set; }
+        public string originalBase64ImageData { get; set; }
         /// <summary>
         /// The ID of the image in the database
         /// </summary>
@@ -25,18 +25,13 @@ namespace PLM.Models
         /// The ID of the answer in the database
         /// </summary>
         public string answerID { get; set; }
-        /// <summary>
-        /// The absolute path to the image file in the temp folder
-        /// </summary>
-        public string tempUrl { get; set; }
 
-        public ConfirmViewModel(string b64Img, string origUrl, string imgID, string ansID, string tmpUrl)
+        public ConfirmViewModel(string new64, string original64, string imgID, string ansID)
         {
-            Base64ImgData = b64Img;
-            originalUrl = origUrl;
+            newBase64ImageData = new64;
+            originalBase64ImageData = original64;
             imageID = imgID;
             answerID = ansID;
-            tempUrl = tmpUrl;
         }
     }
 }

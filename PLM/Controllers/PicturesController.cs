@@ -22,16 +22,14 @@ namespace PLM.Controllers
         private bool incorrectImageType = false;
         private bool imageSizeTooLarge = false;
         private Picture pictureToSave;
-
-        // GET: /Pictures/
+        
         public ActionResult Index()
         {
             //ConvertAllPicturesToStringData();
             var pictures = db.Pictures.Include(p => p.Answer);
             return View(pictures.ToList());
         }
-
-        // GET: /Pictures/Details/5
+        
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -83,6 +81,7 @@ namespace PLM.Controllers
         //}
 
         // GET: /Pictures/Create
+
         [AuthorizeOrRedirectAttribute(Roles = "Instructor")]
         public ActionResult Create(int? id)
         {
@@ -94,6 +93,7 @@ namespace PLM.Controllers
 
             return View(picture);
         }
+
         // POST: /Pictures/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -114,38 +114,6 @@ namespace PLM.Controllers
             ViewBag.AnswerID = id;
             if (ModelState.IsValid)
             {
-                //    var location = SaveUploadedFile(pictureToSave, (int)id);
-                //    if (location == "FAILED" || location == null)
-                //    {
-                //        if (incorrectImageType)
-                //        {
-                //            return RedirectToAction("InvalidImage", new { controller = "Pictures", id = pictureToSave.AnswerID });
-                //        }
-                //        else if (imageSizeTooLarge)
-                //        {
-                //            return RedirectToAction("FileToLarge", new { controller = "Pictures", id = pictureToSave.AnswerID });
-                //        }
-                //        return RedirectToAction("UploadError", new { controller = "Pictures", id = pictureToSave.AnswerID });
-                //    }
-                //    else
-                //    {
-                //        //Stream stream = Request.Files[0].InputStream;
-                //        //int imgLenth = Convert.ToInt32(stream.Length);
-                //        //byte[] imgArr = new byte[imgLenth];
-                //        //using (StreamReader sr = new StreamReader(stream))
-                //        //{
-                //        //    for (int streamIndex = 0; streamIndex < imgLenth; streamIndex++)
-                //        //    {
-                //        //        imgArr[streamIndex] = (byte)sr.Read();
-                //        //    }
-                //        //}
-                //        Image image = Image.FromStream(Request.Files[0].InputStream);
-                //        ImageConverter IC = new ImageConverter();
-                //        byte[] imgArr = (byte[])IC.ConvertTo(image, typeof(byte[]));
-                //        pictureToSave.PictureData = System.Convert.ToBase64String(imgArr);
-                //    }
-                //pictureToSave.Location = location;
-
                 db.Pictures.Add(pictureToSave);
                 db.SaveChanges();
                 return RedirectToAction("edit", new { controller = "Answers", id = pictureToSave.AnswerID });
@@ -161,77 +129,77 @@ namespace PLM.Controllers
             ImageConverter IC = new ImageConverter();
             Image image = Image.FromStream(stream);
             byte[] imageArray = (byte[])IC.ConvertTo(image, typeof(byte[]));
-            pictureToSave.PictureData = System.Convert.ToBase64String(imageArray);
+            pictureToSave.PictureData = Convert.ToBase64String(imageArray);
         }
 
-        /// <summary>
-        /// Save a picture to the server. Returns the relative path if successful, otherwise returns "FAILED"
-        /// </summary>
-        /// <param name="picture">The picture object to be saved</param>
-        /// <returns>string</returns>
-        [NonAction]
-        public string SaveUploadedFile(Picture picture, int id)
-        {
-            imageSizeTooLarge = false;
-            incorrectImageType = false;
-            bool isSavedSuccessfully = false;
-            int picCount;
-            string answerString;
+        ///// <summary>
+        ///// Save a picture to the server. Returns the relative path if successful, otherwise returns "FAILED"
+        ///// </summary>
+        ///// <param name="picture">The picture object to be saved</param>
+        ///// <returns>string</returns>
+        //[NonAction]
+        //public string SaveUploadedFile(Picture picture, int id)
+        //{
+        //    imageSizeTooLarge = false;
+        //    incorrectImageType = false;
+        //    bool isSavedSuccessfully = false;
+        //    int picCount;
+        //    string answerString;
 
-            using (ApplicationDbContext db2 = new ApplicationDbContext())
-            {
-                Session["upload"] = db2.Answers.Find(id).Module.GetModuleDirectory();
-                answerString = db2.Answers.Find(id).AnswerString;
-                picCount = db2.Answers.Find(id).PictureCount;
-                picCount++;
-            }
-            string fName = "";
-            string relpath = "NO FILE UPLOADED";
+        //    using (ApplicationDbContext db2 = new ApplicationDbContext())
+        //    {
+        //        Session["upload"] = db2.Answers.Find(id).Module.GetModuleDirectory();
+        //        answerString = db2.Answers.Find(id).AnswerString;
+        //        picCount = db2.Answers.Find(id).PictureCount;
+        //        picCount++;
+        //    }
+        //    string fName = "";
+        //    string relpath = "NO FILE UPLOADED";
 
-            foreach (string fileName in Request.Files)
-            {
-                HttpPostedFileBase file = Request.Files[fileName];
-                fName = file.FileName;
-                if (file.ContentLength >= 200000)
-                {
-                    //File To Big
-                    imageSizeTooLarge = true;
-                    isSavedSuccessfully = false;
-                }
-                else if (file.ContentType.IndexOf("image") == -1)
-                {
-                    //File Not An Image
-                    incorrectImageType = true;
-                    isSavedSuccessfully = false;
-                }
-                else
-                {
-                    if (file != null && file.ContentLength > 0)
-                    {
-                        string moduleDirectory = (DevPro.baseFileDirectory + "PLM/" + Session["upload"].ToString() + "/");
-                        string newfName = (answerString + "-" + picCount.ToString() + ".png");
-                        relpath = (moduleDirectory + newfName);
-                        file.SaveAs(relpath);
-                        isSavedSuccessfully = true;
-                    }
-                }
-            }
+        //    foreach (string fileName in Request.Files)
+        //    {
+        //        HttpPostedFileBase file = Request.Files[fileName];
+        //        fName = file.FileName;
+        //        if (file.ContentLength >= 200000)
+        //        {
+        //            //File To Big
+        //            imageSizeTooLarge = true;
+        //            isSavedSuccessfully = false;
+        //        }
+        //        else if (file.ContentType.IndexOf("image") == -1)
+        //        {
+        //            //File Not An Image
+        //            incorrectImageType = true;
+        //            isSavedSuccessfully = false;
+        //        }
+        //        else
+        //        {
+        //            if (file != null && file.ContentLength > 0)
+        //            {
+        //                string moduleDirectory = (DevPro.baseFileDirectory + "PLM/" + Session["upload"].ToString() + "/");
+        //                string newfName = (answerString + "-" + picCount.ToString() + ".png");
+        //                relpath = (moduleDirectory + newfName);
+        //                file.SaveAs(relpath);
+        //                isSavedSuccessfully = true;
+        //            }
+        //        }
+        //    }
 
-            if (isSavedSuccessfully)
-            {
-                using (ApplicationDbContext db3 = new ApplicationDbContext())
-                {
-                    db3.Answers.Find(id).PictureCount++;
-                    db3.Entry(db3.Answers.Find(id)).State = EntityState.Modified;
-                    db3.SaveChanges();
-                }
-                return relpath;
-            }
-            else
-            {
-                return "FAILED";
-            }
-        }
+        //    if (isSavedSuccessfully)
+        //    {
+        //        using (ApplicationDbContext db3 = new ApplicationDbContext())
+        //        {
+        //            db3.Answers.Find(id).PictureCount++;
+        //            db3.Entry(db3.Answers.Find(id)).State = EntityState.Modified;
+        //            db3.SaveChanges();
+        //        }
+        //        return relpath;
+        //    }
+        //    else
+        //    {
+        //        return "FAILED";
+        //    }
+        //}
 
         public ActionResult InvalidImage(int id)
         {
@@ -250,7 +218,7 @@ namespace PLM.Controllers
             ViewBag.AnswerID = id;
             return View();
         }
-        // GET: /Pictures/Edit/5
+
         [AuthorizeOrRedirectAttribute(Roles = "Instructor")]
         public ActionResult Edit(int? id)
         {
@@ -266,9 +234,7 @@ namespace PLM.Controllers
             ViewBag.AnswerID = new SelectList(db.Answers, "AnswerID", "AnswerString", picture.AnswerID);
             return View(picture);
         }
-        // POST: /Pictures/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeOrRedirectAttribute(Roles = "Instructor")]
@@ -283,8 +249,7 @@ namespace PLM.Controllers
             ViewBag.AnswerID = new SelectList(db.Answers, "AnswerID", "AnswerString", picture.AnswerID);
             return View(picture);
         }
-
-        // GET: /Pictures/Delete/5
+        
         [AuthorizeOrRedirectAttribute(Roles = "Instructor")]
         public ActionResult Delete(int? id)
         {
@@ -299,7 +264,7 @@ namespace PLM.Controllers
             }
             return View(picture);
         }
-        // POST: /Pictures/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizeOrRedirectAttribute(Roles = "Instructor")]
@@ -308,27 +273,10 @@ namespace PLM.Controllers
             Picture picture = db.Pictures.Find(id);
             db.Pictures.Remove(picture);
             db.SaveChanges();
-            System.IO.File.Delete(picture.Location);
             return RedirectToAction("edit", new { controller = "Answers", id = picture.AnswerID });
         }
+
         #region From Image Editor
-
-        //Image Editor flow:
-        //
-        //User goes to the Image Editor (ImgEd) page
-        //
-        //AJAX call from ImgEd page saves image data
-        //
-        //User hits "Save" button, which is in fact a form submit button that POSTs data 
-        //to the ConfirmPOST() action.
-        //
-        //This action redirects the user to the Confirm GET action after processing the nessecary data
-        //
-        //The user selects either "Save" or "Discard" on the Confirm page, 
-        //which POSTs to either the Save() or Discard() actions, respectively
-        //
-        //Users are then returned to the Index page of the Home controller.
-
         [HttpGet]
         [AuthorizeOrRedirectAttribute(Roles = "Instructor")]
         public ActionResult ImageEditor(int? id)
@@ -350,56 +298,19 @@ namespace PLM.Controllers
         [AuthorizeOrRedirectAttribute(Roles = "Instructor")]
         public ActionResult ImageEditorPOST()
         {
-            //Image Editor post string format:
-            //If the image is saved as a jpeg, the post results in: "data:image/jpeg;base64,[IMAGEDATA]", 
-            //where "[IMAGEDATA]" is a base64 string that converts to a jpeg image.
-            //Otherwise, if the image is saved as a png, the post results in: "data:image/png;base64,[IMAGEDATA]",
-            //where "[IMAGEDATA]" is a base64 string that converts to a png image.
+            //string imgId = Request.Form.Get("imgId");
+            //string answerId = Request.Form.Get("answerId");
+            //string imgData = Request.Form.Get("imgData");
 
-            string imgId = Request.Form.Get("imgId");
-            string answerId = Request.Form.Get("answerId");
-            string imgData = Request.Form.Get("imgData");
+            //string result = SaveImage(imgData, imgId, answerId);
 
-            //This section of code was to check that the extension was the same for both files.
-            //It is being left in in the hopes someone can use it in the future
-            //string origUrl = Request.Form.Get("origUrl");
-            //string imageFormat = "." + imgData.Substring(imgData.IndexOf('/') + 1, imgData.IndexOf(';'));
-
-            //if (imageFormat == ".jpeg")
-            //{
-            //    imageFormat = ".jpg";
-            //}
-
-            //try
-            //{
-            //    if (imageFormat != Path.GetExtension(origUrl))
-            //    {
-            //        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError,
-            //            "The selected image format is not the same as the original image format." +
-            //            " \nPlease select the other image format.");
-            //    }
-            //}
-            //catch (ArgumentException e)
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, e.Message);
-            //}
-
-            string result = SaveImage(imgData, imgId, answerId);
-
-            if (result == "FAILED")
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError,
-                        "Something went wrong with your request. \nContact an administrator.");
-            }
-            //REMOVED: Relates to error when image size is too large.
-            //else if (result == "TOO LARGE")
+            //if (result == "FAILED")
             //{
             //    return new HttpStatusCodeResult(HttpStatusCode.InternalServerError,
-            //    "Image file size larger than 200 KB. \nTry lowering the quality when you save," +
-            //    " \nor resize the image to a smaller size.");
+            //            "Something went wrong with your request. \nContact an administrator.");
             //}
-            //return View();
-            return new HttpStatusCodeResult(HttpStatusCode.OK, result);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         [HttpGet]
@@ -424,12 +335,12 @@ namespace PLM.Controllers
         [ActionName("Confirm")]
         public ActionResult ConfirmPOST()
         {
-            string b64Img = Request.Form.Get("imgData");
+            string b64Img = Request.Form.Get("imageData");
             string origUrl = Request.Form.Get("origUrl");
-            string imgID = Request.Form.Get("imgId");
+            string imgID = Request.Form.Get("imageId");
             string answerID = Request.Form.Get("answerId");
             string tempUrl = Request.Form.Get("tempUrl");
-            ConfirmViewModel model = new ConfirmViewModel(b64Img, origUrl, imgID, answerID, tempUrl);
+            ConfirmViewModel model = new ConfirmViewModel(b64Img, origUrl, imgID, answerID);
             TempData["model"] = model;
             return RedirectToAction("Confirm");
         }
@@ -447,6 +358,9 @@ namespace PLM.Controllers
             //string result = PermaSave(temporaryFileName, origUrl);
             string imgID = Request.Form.Get("imageID");
             int imageID = Int32.Parse(imgID);
+
+            tempUrl = tempUrl.Replace("data:image/png;base64,", "");
+            tempUrl = tempUrl.Replace("data:image/jpeg;base64,", "");
 
             Picture picture = db.Pictures.Find(imageID);
             picture.PictureData = tempUrl;
@@ -485,52 +399,28 @@ namespace PLM.Controllers
         /// Will be used to discriminate which image to overwrite.</param>
         /// <param name="answerId">The id of the answer. Used to select which answer the image belongs to.</param>
         /// <returns>string</returns>
+        /// 
         [NonAction]
-        private string SaveImage(string fromPost, string imgId, string answerId)
+        private string SaveImage(string imageData, string imageId, string answerId)
         {
             try
             {
-                string dirPath = (Path.Combine(Server.MapPath("~/Content/Images/tempUploads/")));
-
-                if (!(Directory.Exists(dirPath)))
-                {
-                    Directory.CreateDirectory(dirPath);
-                }
-                //gets the post data
-                string imageBase64 = fromPost;
-
-                //gets the image format from the post
+                string imageBase64 = imageData;
                 string imageFormat = imageBase64.Substring(imageBase64.IndexOf('/') + 1, imageBase64.IndexOf(';') - 11);
-                //If the image format is jpeg (which will break the system), 
-                if (imageFormat == "jpeg")
-                {
-                    imageFormat = "jpg";
-                }
-                //gets the file data as a Base64 string
                 imageBase64 = imageBase64.Substring(imageBase64.LastIndexOf(',') + 1);
 
-                //converts the file data to a byte array
                 byte[] img = Convert.FromBase64String(imageBase64);
 
-                //sets up the filename, guid part taken from Mark Synowiec at http://stackoverflow.com/questions/730268/unique-random-string-generation
                 Guid g = Guid.NewGuid();
                 string TempFileName = Convert.ToBase64String(g.ToByteArray());
-                //replace invalid characters with valid ones.
+
                 TempFileName = TempFileName.Replace("=", "");
                 TempFileName = TempFileName.Replace("+", "");
-                TempFileName = TempFileName.Replace(@"/", "");
+                //TempFileName = TempFileName.Replace(@"/", "");
 
-                //add the image ID, with discriminating curly braces ("{" and "}")
-                TempFileName = "{" + imgId + "}" + TempFileName;
-
-                //add the answerID, with discriminating brackets ("[" and "]")
+                TempFileName = "{" + imageId + "}" + TempFileName;
                 TempFileName = "[" + answerId + "]" + TempFileName;
-
-                //add the file extension
                 TempFileName = TempFileName + "." + imageFormat;
-
-                //The filename for "answer 1 image 3", for example, would thus look like: 
-                // "[1]{3}khsial3ihvbsliuygal.png"
 
                 using (MemoryStream ms = new MemoryStream(img, 0, img.Length))
                 {
@@ -539,12 +429,12 @@ namespace PLM.Controllers
 
                     if (imageFormat == "jpg")
                     {
-                        image.Save(dirPath + TempFileName, ImageFormat.Jpeg);
+                        //image.Save(dirPath + TempFileName, ImageFormat.Jpeg);
                         image.Dispose();
                     }
                     else if (imageFormat == "png")
                     {
-                        image.Save(dirPath + TempFileName, ImageFormat.Png);
+                        //image.Save(dirPath + TempFileName, ImageFormat.Png);
                         image.Dispose();
                     }
                     else
@@ -552,13 +442,14 @@ namespace PLM.Controllers
                         return "FAILED";
                     }
                 }
-                return dirPath + TempFileName;
+                return /*dirPath + */ TempFileName;
             }
             catch (Exception)
             {
                 return "FAILED";
             }
         }
+
         /// <summary>
         /// Permanently save the file with the given name in the tempUpload folder
         /// to a different folder, with a new name. Overwrites files with the same name that are already there.

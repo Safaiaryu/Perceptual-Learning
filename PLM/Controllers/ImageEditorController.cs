@@ -91,7 +91,7 @@ namespace PLM.Controllers
             string imgID = Request.Form.Get("imgId");
             string answerID = Request.Form.Get("answerId");
             string tempUrl = Request.Form.Get("tempUrl");
-            ConfirmViewModel model = new ConfirmViewModel(b64Img, origUrl, imgID, answerID, tempUrl);
+            ConfirmViewModel model = new ConfirmViewModel(b64Img, origUrl, imgID, answerID);
             TempData["model"] = model;
             return RedirectToAction("Confirm");
         }

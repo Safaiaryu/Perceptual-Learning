@@ -12,9 +12,9 @@
 @using (Html.BeginForm("Confirm", "Pictures", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
-    <input type="text" name="imgId" id="imgId" hidden="hidden" required="required" value="" />
+    <input type="text" name="imageId" id="imageId" hidden="hidden" required="required" value="" />
     <input type="text" name="answerId" id="answerId" hidden="hidden" required="required" value="" />
-    <input type="text" name="imgData" id="imgData" hidden="hidden" required="required" value="" />
+    <input type="text" name="imageData" id="imageData" hidden="hidden" required="required" value="" />
     <input type="text" name="origUrl" id="origUrl" hidden="hidden" required="required" value="" />
     <input type="text" name="tempUrl" id="tempUrl" hidden="hidden" required="required" value="" />
     <input class="btn btn-primary" type="submit" style="background-color:green" value="Save" />
