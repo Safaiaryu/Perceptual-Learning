@@ -40,11 +40,6 @@ namespace PLM.Controllers
         [ActionName("ImageEditor")]
         public ActionResult ImageEditorPOST()
         {
-            //Image Editor post string format:
-            //If the image is saved as a jpeg, the post results in: "data:image/jpeg;base64,[IMAGEDATA]", 
-            //where "[IMAGEDATA]" is a base64 string that converts to a jpeg image.
-            //Otherwise, if the image is saved as a png, the post results in: "data:image/png;base64,[IMAGEDATA]",
-            //where "[IMAGEDATA]" is a base64 string that converts to a png image.
             string imgId = Request.Form.Get("imgId");
             string answerId = Request.Form.Get("answerId");
             // SaveImage saves a temporary file

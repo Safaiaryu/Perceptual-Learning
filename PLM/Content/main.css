@@ -1005,6 +1005,12 @@ ul.elements li > i{
 /*************************
 *******Portfolio Default**
 **************************/
+.portfolio-wrapper {
+
+}
+
+.portfolio-item {
+}
 
 .portfolio-single {
   position: relative;
@@ -1012,12 +1018,13 @@ ul.elements li > i{
 
 .portfolio-thumb {
   position: relative;
+  overflow: hidden;
 }
 
 .portfolio-thumb img {
-  width: 100%;
+  height: auto;
+  width: inherit;
 }
-
 
 .portfolio-single:hover .portfolio-view{
   display: block;
@@ -1025,7 +1032,7 @@ ul.elements li > i{
   animation: fadeInUp 400ms;
 }
 
-#portfolio .row{
+.row{
   margin-left: -10px;
   margin-right: -10px;
 }
@@ -1077,7 +1084,6 @@ ul.elements li > i{
 
 .portfolio-info {
   overflow: hidden;
-  margin-bottom: 30px;
 }
 
 .portfolio-info h2 {
@@ -1135,6 +1141,10 @@ ul.elements li > i{
   
   padding-top: 40px;
   padding-bottom: 90px;
+}
+
+.pagination-container {
+    bottom: 0px;
 }
 
 .pagination li{

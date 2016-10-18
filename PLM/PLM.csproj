@@ -1291,6 +1291,7 @@
     <Content Include="Views\Pictures\FileToLarge.cshtml" />
     <Content Include="Views\Pictures\PictureView.cshtml" />
     <Content Include="Views\Pictures\PictureViewImageEditor.cshtml" />
+    <Content Include="Views\Pictures\GamePictureView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
